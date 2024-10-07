@@ -1,24 +1,36 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Person = sequelize.define('Person', {
-   firstName: {
-     type: DataTypes.STRING,
-     allowNull: false
-   },
-   lastName: {
-     type: DataTypes.STRING,
-     allowNull: false
-   },
-   birthDate: {
-     type: DataTypes.DATE,
-     allowNull: false
-   },
-   gender: {
-     type: DataTypes.ENUM('male', 'female'),
-     allowNull: false
-   },
-   // Additional fields like place of birth, biography, etc.
+const Person = sequelize.define('person', {
+	id: {
+		type: DataTypes.UUID,
+		allowNull: false,
+		primaryKey: true,
+	},
+	firstName: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	},
+	lastName: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	},
+	birthDate: {
+		type: DataTypes.DATE,
+		allowNull: false,
+	},
+	gender: {
+		type: DataTypes.ENUM('male', 'female'),
+		allowNull: false,
+	},
+	fatherId: {
+		type: DataTypes.UUID,
+		allowNull: true,
+	},
+	motherId: {
+		type: DataTypes.UUID,
+		allowNull: true,
+	},
 });
 
 Person.associate = (models) => {
