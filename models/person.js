@@ -53,10 +53,6 @@ const Person = sequelize.define(
 	}
 );
 
-Person.associate = (models) => {
-	// Self-referential relationship to establish parent-child hierarchy
-	Person.belongsTo(models.Person, { as: 'parent', foreignKey: 'parentId' });
-	Person.belongsTo(models.Person, { as: 'partner', foreignKey: 'partnerId' });
-};
+
 
 module.exports = Person;

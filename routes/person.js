@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Person } = require('../models');
 const { v4: uuidv4 } = require('uuid');
-
+const personController = require('../controllers/personController');
 // Create a new person
 router.post('/', async (req, res) => {
 	try {
@@ -15,14 +15,11 @@ router.post('/', async (req, res) => {
 	}
 });
 // Get all people
-router.get('/', async (req, res) => {
-	try {
-		const person = await Person.findAll();
-		res.status(201).json(person);
-	} catch (error) {
-		res.status(500).json({ message: 'Error fetching all people', error });
-	}
-});
+router
+	.route('/')
+
+	.get(personController.listAllPeople);
+
 
 // Get details of a person by ID
 router.get('/:id', async (req, res) => {
