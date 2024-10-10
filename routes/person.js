@@ -3,17 +3,19 @@ const router = express.Router();
 const { Person } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 const personController = require('../controllers/personController');
-// Create a new person
-router.post('/', async (req, res) => {
-	try {
-		const persondata = req.body;
-		persondata.id = uuidv4();
-		const person = await Person.create(req.body);
-		res.status(201).json(person);
-	} catch (error) {
-		res.status(500).json({ message: 'Error creating person', error });
-	}
-});
+
+// Add Child
+router
+	.route('/child')
+
+	.post(personController.addChild);
+
+// Add partner
+router
+	.route('/partner')
+
+	.post(personController.addPartner);
+
 // Get all people
 router
 	.route('/')
