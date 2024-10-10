@@ -53,6 +53,13 @@ const Person = sequelize.define(
 	}
 );
 
-
+Person.hasOne(Person, {
+	foreignKey: 'partnerId',
+	as: 'partner',
+});
+Person.hasOne(Person, {
+	foreignKey: 'parentId',
+	as: 'parent',
+});
 
 module.exports = Person;
