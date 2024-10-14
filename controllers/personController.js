@@ -1,6 +1,6 @@
 const { Op, where } = require('sequelize');
 const { Person, sequelize } = require('../models');
-const { v4: uuidv4 } = require('uuid');
+const { updateGoogleSheet } = require('../services/googleSheets');
 
 async function listAllPeople(req, res, next) {
 	try {
@@ -32,12 +32,12 @@ async function listAllPeople(req, res, next) {
 async function addPartner(req, res, next) {
 	try {
 		const persondata = req.body;
-		persondata.id = uuidv4();
-		const person = await Person.create(req.body);
+		const person = await Person.create(persondata);
 		await Person.update(
-			{ partnerId: persondata.id },
+			{ partnerId: person.dataValues.id },
 			{ where: { id: persondata.partnerId } }
 		);
+		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {
 		res.status(500).json({ message: 'Error creating partner', error });
@@ -46,9 +46,8 @@ async function addPartner(req, res, next) {
 async function addChild(req, res, next) {
 	try {
 		const persondata = req.body;
-		persondata.id = uuidv4();
-		const person = await Person.create(req.body);
-
+		const person = await Person.create(persondata);
+		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {
 		res.status(500).json({ message: 'Error creating partner', error });

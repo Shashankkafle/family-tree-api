@@ -5,9 +5,10 @@ const Person = sequelize.define(
 	'person',
 	{
 		id: {
-			type: DataTypes.UUID,
-			allowNull: false,
+			type: DataTypes.INTEGER,
+			autoIncrement: true,
 			primaryKey: true,
+			allowNull: false,
 		},
 		firstName: {
 			type: DataTypes.STRING,
@@ -26,11 +27,11 @@ const Person = sequelize.define(
 			allowNull: false,
 		},
 		parentId: {
-			type: DataTypes.UUID,
+			type: DataTypes.INTEGER,
 			allowNull: true,
 		},
 		partnerId: {
-			type: DataTypes.UUID,
+			type: DataTypes.INTEGER,
 			allowNull: true,
 		},
 		isRoot: {
