@@ -4,6 +4,7 @@ const { updateGoogleSheet } = require('../services/googleSheets');
 
 async function listAllPeople(req, res, next) {
 	try {
+		console.log('listing people');
 		// const people = await Person.findAll({
 		// 	where: {
 		// 		[Op.or]: [{ parentId: { [Op.ne]: null } }, { isRoot: true }],
@@ -53,4 +54,20 @@ async function addChild(req, res, next) {
 		res.status(500).json({ message: 'Error creating partner', error });
 	}
 }
-module.exports = { listAllPeople, addPartner, addChild };
+async function updatePerson(req, res, next) {
+	try {
+		const [updated] = await Person.update(req.body, {
+			where: { id: req.params.id },
+		});
+		if (updated) {
+			const updatedPerson = await Person.findByPk(req.params.id);
+			await updateGoogleSheet(updatedPerson.dataValues);
+			res.status(200).json(updatedPerson);
+		} else {
+			res.status(404).json({ message: 'Person not found' });
+		}
+	} catch (error) {
+		res.status(500).json({ message: 'Error updating person', error });
+	}
+}
+module.exports = { listAllPeople, addPartner, addChild, updatePerson };

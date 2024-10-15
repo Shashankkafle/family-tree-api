@@ -93,11 +93,11 @@ async function updateGoogleSheet(persondata) {
 			'isRoot',
 		];
 		const values = [extractProperties(persondata, properties)];
-		await sheets.spreadsheets.values.append({
+		await sheets.spreadsheets.values.update({
 			spreadsheetId: process.env.GOOGLE_SHEET_ID,
+			//the A and H refer to columns in the sheets make correct values are being saved in the correct column
 			range: `A${persondata.id}:H${persondata.id}`,
 			valueInputOption: 'RAW',
-			insertDataOption: 'OVERWRITE',
 			requestBody: {
 				range: `A${persondata.id}:H${persondata.id}`,
 				majorDimension: 'ROWS',
