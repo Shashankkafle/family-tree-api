@@ -25,7 +25,6 @@ async function listAllPeople(req, res, next) {
 		// 	],
 		// });
 		const people = await Person.findAll();
-		console.log('found people', people);
 		res.status(200).json(people);
 	} catch (error) {
 		res.status(500).json({ message: 'Error fetching all people', error });
