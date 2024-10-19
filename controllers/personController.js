@@ -27,7 +27,7 @@ async function listAllPeople(req, res, next) {
 		const people = await Person.findAll();
 		res.status(200).json(people);
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching all people', error });
+		next(error);
 	}
 }
 async function addPartner(req, res, next) {
@@ -41,7 +41,7 @@ async function addPartner(req, res, next) {
 		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating partner', error });
+		next(error);
 	}
 }
 async function addChild(req, res, next) {
@@ -51,7 +51,7 @@ async function addChild(req, res, next) {
 		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating partner', error });
+		next(error);
 	}
 }
 async function updatePerson(req, res, next) {
@@ -67,7 +67,7 @@ async function updatePerson(req, res, next) {
 			res.status(404).json({ message: 'Person not found' });
 		}
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating person', error });
+		next(error);
 	}
 }
 async function deletePerson(req, res, next) {
@@ -83,7 +83,7 @@ async function deletePerson(req, res, next) {
 			res.status(404).json({ message: 'Person not found' });
 		}
 	} catch (error) {
-		res.status(500).json({ message: 'Error deleting person', error });
+		next(error);
 	}
 }
 module.exports = {

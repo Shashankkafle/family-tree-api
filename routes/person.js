@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { Person } = require('../models');
-const { v4: uuidv4 } = require('uuid');
 const personController = require('../controllers/personController');
 
 // Add Child
