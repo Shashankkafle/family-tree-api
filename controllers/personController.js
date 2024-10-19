@@ -70,4 +70,26 @@ async function updatePerson(req, res, next) {
 		res.status(500).json({ message: 'Error updating person', error });
 	}
 }
-module.exports = { listAllPeople, addPartner, addChild, updatePerson };
+async function deletePerson(req, res, next) {
+	try {
+		const id = req.params.id;
+		const deleted = await Person.destroy({
+			where: { id },
+		});
+		await updateGoogleSheet({ id });
+		if (deleted) {
+			res.status(200).json({ message: 'Person deleted' });
+		} else {
+			res.status(404).json({ message: 'Person not found' });
+		}
+	} catch (error) {
+		res.status(500).json({ message: 'Error deleting person', error });
+	}
+}
+module.exports = {
+	listAllPeople,
+	addPartner,
+	addChild,
+	updatePerson,
+	deletePerson,
+};
