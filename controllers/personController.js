@@ -1,6 +1,7 @@
 const { Op, where } = require('sequelize');
 const { Person, sequelize } = require('../models');
 const { updateGoogleSheet } = require('../services/googleSheets');
+const { uploadImage } = require('../services/imageUpload');
 
 async function listAllPeople(req, res, next) {
 	try {
@@ -32,11 +33,15 @@ async function listAllPeople(req, res, next) {
 }
 async function addPartner(req, res, next) {
 	try {
-		const persondata = req.body;
-		const person = await Person.create(persondata);
+		const personData = req.body;
+		if (req?.files?.image) {
+			const imageUrl = await uploadImage(req?.files?.image.data);
+			personData.image = imageUrl;
+		}
+		const person = await Person.create(personData);
 		await Person.update(
 			{ partnerId: person.dataValues.id },
-			{ where: { id: persondata.partnerId } }
+			{ where: { id: personData.partnerId } }
 		);
 		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
@@ -46,8 +51,12 @@ async function addPartner(req, res, next) {
 }
 async function addChild(req, res, next) {
 	try {
-		const persondata = req.body;
-		const person = await Person.create(persondata);
+		const personData = req.body;
+		if (req?.files?.image) {
+			const imageUrl = await uploadImage(req?.files?.image.data);
+			personData.image = imageUrl;
+		}
+		const person = await Person.create(personData);
 		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {
@@ -56,7 +65,12 @@ async function addChild(req, res, next) {
 }
 async function updatePerson(req, res, next) {
 	try {
-		const [updated] = await Person.update(req.body, {
+		const personData = req.body;
+		if (req?.files?.image) {
+			const imageUrl = await uploadImage(req?.files?.image.data);
+			personData.image = imageUrl;
+		}
+		const [updated] = await Person.update(personData, {
 			where: { id: req.params.id },
 		});
 		if (updated) {

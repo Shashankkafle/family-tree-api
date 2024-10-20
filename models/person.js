@@ -18,9 +18,37 @@ const Person = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
+		email: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		profession: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		permanentAdress: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		currentAdress: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		phoneNumber: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		image: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 		birthDate: {
 			type: DataTypes.DATE,
 			allowNull: false,
+		},
+		deathDate: {
+			type: DataTypes.DATE,
+			allowNull: true,
 		},
 		gender: {
 			type: DataTypes.ENUM('male', 'female'),

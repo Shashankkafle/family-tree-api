@@ -12,7 +12,6 @@ const googleRoutes = require('./routes/google');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 initDb(); // Initialize the DB when server starts
 app.use(logger('dev'));
