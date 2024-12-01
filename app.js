@@ -33,6 +33,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/health-check', (req, res, next) => {
+	req.id = uuidv4();
+	res.send('Server Running');
+});
 app.use('/person', personRoutes);
 app.use('/oauth2callback', googleRoutes);
 
