@@ -33,13 +33,12 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/person', personRoutes);
+app.use('/oauth2callback', googleRoutes);
 app.use('/health-check', (req, res, next) => {
 	req.id = uuidv4();
 	res.send('Server Running');
 });
-app.use('/person', personRoutes);
-app.use('/oauth2callback', googleRoutes);
-
 app.use((req, res, next) => {
 	next(new createHttpError.NotFound());
 });
