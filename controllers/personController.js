@@ -2,6 +2,43 @@ const { Op, where } = require('sequelize');
 const { Person, sequelize } = require('../models');
 const { updateGoogleSheet } = require('../services/googleSheets');
 const { uploadImage } = require('../services/imageUpload');
+function buildNestedTree(rows) {
+	const idMap = new Map();
+	const roots = [];
+  
+	for (const row of rows) {
+	  row.children = [];
+	  idMap.set(row.id, row);
+	}
+  
+	for (const row of rows) {
+	  if (!row.isRoot) {
+		const parent = idMap.get(row.parentId);
+		const partner = idMap.get(row.partnerId)
+		if (parent) {
+			if (partner) row.partner = partner
+			const parentPartner = idMap.get(parent.partnerId)
+			if(!parentPartner){
+					// make some kind of log signalling somwthing wrong with the data saying apartenr must exist for a child to exist 
+					console.log("child without  partner detected for parent",parent.id)
+					parent.children.push(row)
+			}
+			else{
+				//child added to partner to make sure that we know which child is fro which partner in case of multiple partners
+			parentPartner.children.push(row);
+
+			}
+		}
+		
+	  } else {
+		roots.push(row);
+	  }
+	}
+  
+	return roots;
+  }
+  
+  
 
 async function listAllPeople(req, res, next) {
 	try {
@@ -28,6 +65,33 @@ async function listAllPeople(req, res, next) {
 		const people = await Person.findAll();
 		res.status(200).json(people);
 	} catch (error) {
+		next(error);
+	}
+}
+async function listAsTree(req, res, next) {
+	try {
+
+		const [results, metadata] = await sequelize.query(`
+ WITH RECURSIVE tree AS (
+  SELECT
+id, "firstName", "parentId", "isRoot", "partnerId"
+  FROM
+    people
+  WHERE
+    "isRoot" = True
+  UNION
+  SELECT
+    p.id, p."firstName", p."parentId", p."isRoot" , p."partnerId"
+  FROM
+    people p
+    INNER JOIN tree t ON (t.id = p."parentId" OR t.id = p."partnerId")
+)
+SELECT * FROM tree;`);
+console.log("results",results)
+const familyTree = buildNestedTree(results)
+res.status(200).json(familyTree);
+	} catch (error) {
+		console.log("error form controller",error)
 		next(error);
 	}
 }
@@ -106,4 +170,5 @@ module.exports = {
 	addChild,
 	updatePerson,
 	deletePerson,
+	listAsTree
 };

@@ -15,6 +15,19 @@ router
 
 	.post(personController.addPartner);
 
+
+// Get all people
+router
+	.route('/')
+
+	.get(personController.listAllPeople);
+
+// Get people tree
+router
+	.route('/tree')
+
+	.get(personController.listAsTree);
+
 // Get details of a person by ID
 router.get('/:id', async (req, res) => {
 	try {
@@ -28,12 +41,6 @@ router.get('/:id', async (req, res) => {
 		res.status(500).json({ message: 'Error fetching person', error });
 	}
 });
-
-// Get all people
-router
-	.route('/')
-
-	.get(personController.listAllPeople);
 
 // Update person details
 router
