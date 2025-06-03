@@ -24,14 +24,6 @@ const Person = sequelize.define(
 			type: DataTypes.ENUM('male', 'female'),
 			allowNull: false,
 		},
-		parentId: {
-			type: DataTypes.INTEGER,
-			allowNull: true,
-		},
-		partnerId: {
-			type: DataTypes.INTEGER,
-			allowNull: true,
-		},
 		isRoot: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
@@ -52,8 +44,18 @@ const Person = sequelize.define(
 );
 
 // Relationships
-Person.belongsTo(Person, { foreignKey: 'partnerId', as: 'partner' });
-Person.belongsTo(Person, { foreignKey: 'parentId', as: 'parent' });
-Person.hasMany(Person, { foreignKey: 'parentId', as: 'children' });
+//Many to many relationships are made to keep track of which parent the child belongs to in case of multiple partners.
+//Many to many reletionships could be avided by some clever implementation like assigning the partner as parent instead of direct discendant but it would complicate the system and make it rigid.  
+
+Person.belongsToMany(Person, {
+	through: 'PersonParents',
+	as: 'parents',
+  });
+  
+  
+  Person.belongsToMany(Person, {
+	as: 'partners',
+	through: 'PersonPartners',
+  });
 
 module.exports = Person;

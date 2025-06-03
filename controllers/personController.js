@@ -42,56 +42,18 @@ function buildNestedTree(rows) {
 
 async function listAllPeople(req, res, next) {
 	try {
-		console.log('listing people');
-		// const people = await Person.findAll({
-		// 	where: {
-		// 		[Op.or]: [{ parentId: { [Op.ne]: null } }, { isRoot: true }],
-		// 	},
-		// 	include: [
-		// 		{
-		// 			model: Person,
-		// 			as: 'partner',
-		// 		},
-		// 		{
-		// 			model: Person,
-		// 			as: 'parent',
-		// 			include: {
-		// 				model: Person,
-		// 				as: 'partner',
-		// 			},
-		// 		},
-		// 	],
-		// });
-		const people = await Person.findAll();
+		const people = await Person.findAll({
+				include:[
+						{
+							model:Person, as:'partners'
+						},
+						{
+							model:Person, as:'parents'
+						}
+					]
+			});
 		res.status(200).json(people);
 	} catch (error) {
-		next(error);
-	}
-}
-async function listAsTree(req, res, next) {
-	try {
-
-		const [results, metadata] = await sequelize.query(`
- WITH RECURSIVE tree AS (
-  SELECT
-id, "firstName", "parentId", "isRoot", "partnerId"
-  FROM
-    people
-  WHERE
-    "isRoot" = True
-  UNION
-  SELECT
-    p.id, p."firstName", p."parentId", p."isRoot" , p."partnerId"
-  FROM
-    people p
-    INNER JOIN tree t ON (t.id = p."parentId" OR t.id = p."partnerId")
-)
-SELECT * FROM tree;`);
-console.log("results",results)
-const familyTree = buildNestedTree(results)
-res.status(200).json(familyTree);
-	} catch (error) {
-		console.log("error form controller",error)
 		next(error);
 	}
 }
@@ -170,5 +132,4 @@ module.exports = {
 	addChild,
 	updatePerson,
 	deletePerson,
-	listAsTree
 };
