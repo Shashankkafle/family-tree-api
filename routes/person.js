@@ -22,11 +22,6 @@ router
 
 	.get(personController.listAllPeople);
 
-// Get people tree
-router
-	.route('/tree')
-
-	.get(personController.listAsTree);
 
 // Get details of a person by ID
 router.get('/:id', async (req, res) => {
