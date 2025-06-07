@@ -31,15 +31,16 @@ const Person = sequelize.define(
 		},
 	},
 	{
-		validate: {
-			parentOrPartnerNeeded() {
-				if (!this.parentId && !this.partnerId && !this.isRoot) {
-					throw new Error(
-						'At least one of parentId or partnerId must be provided'
-					);
-				}
-			},
-		},
+		// validate: {
+		// 	parentOrPartnerNeeded() {
+		// 		console.log("form validator", this.parentId, this.partnerId, this.isRoot);
+		// 		if (!this.parentId && !this.partnerId && !this.isRoot) {
+		// 			throw new Error(
+		// 				'At least one of parentId or partnerId must be provided'
+		// 			);
+		// 		}
+		// 	},
+		// },
 	}
 );
 
