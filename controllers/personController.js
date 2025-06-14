@@ -12,10 +12,10 @@ async function listAllPeople(req, res, next) {
 		const people = await Person.findAll({
 				include:[
 						{
-							model:Person, as:'partners'
+							model:Person, as:'partners' , attributes:['id']
 						},
 						{
-							model:Person, as:'parents'
+							model:Person, as:'parents' ,attributes:['id']
 						}
 					]
 			});
