@@ -2,14 +2,14 @@ const { Op, where } = require('sequelize');
 const { Person, PersonPartners,sequelize } = require('../models');
 const { updateGoogleSheet } = require('../services/googleSheets');
 const { uploadImage } = require('../services/imageUpload');
-async function linkPartners(personA, personB) {
+async function linkPartners(personA, personB,transaction) {
 	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-	await personA.addPartner(personB);
-	await personB.addPartner(personA);
+	await personA.addPartner(personB,{transaction});
+	await personB.addPartner(personA,{transaction});
 }
-async function linkParents(child, parentA,parentB) {
+async function linkParents(child, parentA,parentB,transaction) {
 	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-	await child.addParents([parentA, parentB]);
+	await child.addParents([parentA, parentB],{transaction});
 }
 
 
@@ -41,11 +41,14 @@ async function addPartner(req, res, next) {
 		if (!partner) {
 			return res.status(400).json({ message: 'Partner not found' });
 		}
-		const person = await Person.create(personData);
-		await linkPartners(person, partner);
+		const t = await sequelize.transaction();
+		const person = await Person.create(personData,{transaction: t});
+		await linkPartners(person, partner,t);
 		await updateGoogleSheet(person.dataValues);
+		await t.commit(); 
 		res.status(201).json(person);
 	} catch (error) {
+		await t.rollback();
 		next(error);
 	}
 }
@@ -56,10 +59,21 @@ async function addChild(req, res, next) {
 			const imageUrl = await uploadImage(req?.files?.image.data);
 			personData.image = imageUrl;
 		}
-		const person = await Person.create(personData);
+		const t = await sequelize.transaction();
+		const parent1 = await Person.findByPk(personData.parent1Id);
+		const parent2 = await Person.findByPk(personData.parent2Id);
+		if (!parent1 || !parent2) {
+			return res.status(400).json({ message: 'Parents not found' });
+		}
+		const person = await Person.create(personData,{transaction: t});
+		console.log('Person created:', person);
+		await linkParents(person, parent1, parent2,t);
+		
 		await updateGoogleSheet(person.dataValues);
+		await t.commit(); 
 		res.status(201).json(person);
 	} catch (error) {
+		await t.rollback(); 
 		next(error);
 	}
 }
@@ -102,7 +116,6 @@ async function deletePerson(req, res, next) {
 }
 async function gerPersonPartners(req, res, next) {
 	try {
-		console.log("from controller")
 		const personId = req.params.id;
 		const person = await Person.findByPk(personId);
 		const partners = await person.getPartners();
