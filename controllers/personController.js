@@ -1,5 +1,4 @@
-const { Op, where } = require('sequelize');
-const { Person, PersonPartners,sequelize } = require('../models');
+const { Person,sequelize } = require('../models');
 const { updateGoogleSheet } = require('../services/googleSheets');
 const { uploadImage } = require('../services/imageUpload');
 async function linkPartners(personA, personB,transaction) {

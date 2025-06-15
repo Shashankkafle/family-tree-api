@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { Person } = require('../models');
 const personController = require('../controllers/personController');
+const { validateAddPartner, validateAddChild, validateUpdatePerson } = require('../middleware/person.middleware');
 
 // Get partners of a person
 router.get('/partner/:id', personController.gerPersonPartners);
 
 // Add partner
-router.post('/partner', personController.addPartner);
-
+router.post('/partner', validateAddPartner, personController.addPartner);
 // Add child
-router.post('/child', personController.addChild);
+router.post('/child', validateAddChild, personController.addChild);
 
 // Get all people
 router.get('/', personController.listAllPeople);
@@ -31,7 +31,7 @@ router.get('/:id', async (req, res,next) => {
 });
 
 // Update person details
-router.put('/:id', personController.updatePerson);
+router.put('/:id', validateUpdatePerson, personController.updatePerson);
 
 // Delete a person
 router.delete('/:id',  personController.deletePerson);
