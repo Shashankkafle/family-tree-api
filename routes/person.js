@@ -3,29 +3,22 @@ const router = express.Router();
 const { Person } = require('../models');
 const personController = require('../controllers/personController');
 
-// Add Child
-router
-	.route('/child')
-
-	.post(personController.addChild);
+// Get partners of a person
+router.get('/partner/:id', personController.gerPersonPartners);
 
 // Add partner
-router
-	.route('/partner')
+router.post('/partner', personController.addPartner);
 
-	.post(personController.addPartner);
-
+// Add child
+router.post('/child', personController.addChild);
 
 // Get all people
-router
-	.route('/')
-
-	.get(personController.listAllPeople);
-
+router.get('/', personController.listAllPeople);
 
 // Get details of a person by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res,next) => {
 	try {
+		console.log('Fetching person with ID:', req.params);
 		const person = await Person.findByPk(req.params.id);
 		if (person) {
 			res.status(200).json(person);
@@ -33,23 +26,14 @@ router.get('/:id', async (req, res) => {
 			res.status(404).json({ message: 'Person not found' });
 		}
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching person', error });
+		next(error);
 	}
 });
 
 // Update person details
-router
-	.route('/:id')
+router.put('/:id', personController.updatePerson);
 
-	.put(personController.updatePerson);
-
-	
 // Delete a person
-router
-	.route('/:id')
-
-	.delete(personController.deletePerson);
-
-
+router.delete('/:id',  personController.deletePerson);
 
 module.exports = router;

@@ -3,9 +3,15 @@ const { Person, PersonPartners,sequelize } = require('../models');
 const { updateGoogleSheet } = require('../services/googleSheets');
 const { uploadImage } = require('../services/imageUpload');
 async function linkPartners(personA, personB) {
+	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
 	await personA.addPartner(personB);
 	await personB.addPartner(personA);
 }
+async function linkParents(child, parentA,parentB) {
+	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+	await child.addParents([parentA, parentB]);
+}
+
 
 async function listAllPeople(req, res, next) {
 	try {
@@ -94,10 +100,22 @@ async function deletePerson(req, res, next) {
 		next(error);
 	}
 }
+async function gerPersonPartners(req, res, next) {
+	try {
+		console.log("from controller")
+		const personId = req.params.id;
+		const person = await Person.findByPk(personId);
+		const partners = await person.getPartners();
+		res.status(201).json([...partners]);
+	} catch (error) {
+		next(error);
+	}
+}
 module.exports = {
 	listAllPeople,
 	addPartner,
 	addChild,
 	updatePerson,
 	deletePerson,
+	gerPersonPartners
 };
