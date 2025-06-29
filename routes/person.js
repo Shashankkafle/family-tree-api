@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { Person } = require('../models');
 const personController = require('../controllers/personController');
-const { validateAddPartner, validateAddChild, validateUpdatePerson } = require('../middleware/person.middleware');
+const { validateUpdatePerson, validateAddChild, validateAddPartner } = require('../validators/person');
+const { fetchPersonById } = require('../repository/person.repo');
 
 // Get partners of a person
-router.get('/partner/:id', personController.gerPersonPartners);
+router.get('/partner/:id', personController.getPersonPartners);
 
 // Add partner
 router.post('/partner', validateAddPartner, personController.addPartner);
@@ -18,8 +19,7 @@ router.get('/', personController.listAllPeople);
 // Get details of a person by ID
 router.get('/:id', async (req, res,next) => {
 	try {
-		console.log('Fetching person with ID:', req.params);
-		const person = await Person.findByPk(req.params.id);
+		const person = await fetchPersonById(req.params.id);
 		if (person) {
 			res.status(200).json(person);
 		} else {

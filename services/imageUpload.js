@@ -43,7 +43,6 @@ const getAssetInfo = async (publicId) => {
 
 	try {
 		const result = await cloudinary.api.resource(publicId, options);
-		console.log(result);
 		return result.colors;
 	} catch (error) {
 		console.error(error);
