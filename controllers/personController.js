@@ -44,7 +44,7 @@ async function addChild(req, res, next) {
 		  if (!parent1 || !parent2) {
 			  return res.status(400).json({ message: 'Parents of the child not found' });
 		  }	
-		  const person = await createChild(personData);	
+		  const person = await createChild(personData,parent1, parent2);	
 		await updateGoogleSheet(person.dataValues);
 		res.status(201).json(person);
 	} catch (error) {

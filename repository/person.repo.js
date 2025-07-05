@@ -1,9 +1,14 @@
-const { Person } = require("../models");
+const { Person, sequelize } = require("../models");
 
 async function linkPartners(personA, personB,transaction) {
 	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-	await personA.addPartner(personB,{transaction});
+	await personA.addParent(personB,{transaction});
 	await personB.addPartner(personA,{transaction});
+}
+async function linkParents(person,parent1, parent2,transaction) {
+	//thise are sequelize mixins read more about them here https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+	await person.addParent(parent1,{transaction});
+	const a = await person.addParent(parent2,{transaction});
 }
 async function fetchPersonPartners(personId){
     try{
@@ -53,9 +58,11 @@ async function cratePartner(personData,partner) {
     }
     
 }
-async function createChild(personData) {
+async function createChild(personData,parent1, parent2) {
     try {    
-		const person = await Person.create(personData,);
+        const t = await sequelize.transaction();
+		const person = await Person.create(personData,{transaction: t});
+        await linkParents(person,parent1,parent2,t)
         return person;
     } catch (error) {
         throw new Error(`Error creating child: ${error.message}`);
