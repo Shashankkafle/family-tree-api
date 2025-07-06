@@ -4,6 +4,7 @@ const { Person } = require('../models');
 const personController = require('../controllers/personController');
 const { validateUpdatePerson, validateAddChild, validateAddPartner } = require('../validators/person');
 const { fetchPersonById } = require('../repository/person.repo');
+const { checkPartnership } = require('../middleware/person.middleware');
 
 // Get partners of a person
 router.get('/partner/:id', personController.getPersonPartners);
@@ -11,7 +12,7 @@ router.get('/partner/:id', personController.getPersonPartners);
 // Add partner
 router.post('/partner', validateAddPartner, personController.addPartner);
 // Add child
-router.post('/child', validateAddChild, personController.addChild);
+router.post('/child', validateAddChild,checkPartnership, personController.addChild);
 
 // Get all people
 router.get('/', personController.listAllPeople);
